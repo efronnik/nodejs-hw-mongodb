@@ -1,7 +1,7 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
-import { env } from './utils/env';
+import { env } from './utils/env.js';
 import { getAllContacts, getContactById } from './services/contacts.js';
 import { ENV_VARS } from './constants/index.js';
 
