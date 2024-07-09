@@ -1,38 +1,40 @@
-// src/server.js
-
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
-import { setupServer } from './utils/env.js';
-import { errorHandler, notFoundHandler } from './middlewares/errorHandlers.js';
-import contactsRouter from './routers/contacts.js';
+import { env } from './utils/env.js';
 
-const app = express();
-const PORT = setupServer();
+import { ENV_VARS } from './constants/index.js';
+import contactsRoute from './routers/contacts.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
-app.use(
-  pino({
-    transport: {
-      target: 'pino-pretty',
-    },
-  }),
-);
-app.use(cors());
-app.use(express.json());
+export const setupServer = () => {
+  const PORT = env(ENV_VARS.PORT, '3000');
+  const app = express();
 
-// Підключення роутера для контактів
-app.use(contactsRouter);
+  app.use(
+    pino({
+      transport: {
+        target: 'pino-pretty',
+      },
+    }),
+  );
 
-// Middleware для обробки помилок 404 (неіснуючі маршрути)
-app.use(notFoundHandler);
+  app.use(cors());
 
-// Middleware для обробки всіх інших помилок
-app.use(errorHandler);
+  app.use(express.json());
 
-app.listen(PORT, (error) => {
-  if (error) {
-    console.error('Server crushed. Error:', error);
-    process.exit(1);
-  }
-  console.log('Server is running on port', PORT);
-});
+  app.use(contactsRoute);
+
+  app.use(notFoundHandler);
+
+  app.use(errorHandler);
+
+  app.listen(PORT, (error) => {
+    if (error) {
+      console.log('Server crushed. error: ', error);
+      process.exit(1);
+    }
+    console.log('Server is running on port', PORT);
+  });
+};
