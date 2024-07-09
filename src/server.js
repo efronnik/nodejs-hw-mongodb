@@ -6,6 +6,7 @@ import cors from 'cors';
 import { env } from './utils/env.js';
 import contactsRouter from './routers/contacts.js';
 import { ENV_VARS } from './constants/index.js';
+import createError from 'http-errors'; // імпорт пакету http-errors
 
 const setupServer = () => {
   const PORT = env(ENV_VARS.PORT, '3000');
@@ -20,20 +21,25 @@ const setupServer = () => {
   );
   app.use(cors());
 
-  // Use contacts router for /contacts route
+  // Використовуємо роутер контактів для маршруту /contacts
   app.use('/contacts', contactsRouter);
 
-  // Handle 404 errors
-  app.use((_, res) => {
-    res.status(404).json({ message: 'Not found' });
-  });
+  // Middleware для обробки помилок 404 (маршрути не знайдені)
+  const notFoundHandler = (req, res, next) => {
+    next(createError(404, 'Route not found'));
+  };
 
-  // Error handling middleware
-  app.use((error, _, res, __) => {
-    const { message = 'Server internal error!', status = 500 } = error;
-    res.status(status).json({ status, message });
-  });
+  app.use(notFoundHandler);
 
+  // Middleware для обробки всіх інших помилок
+  const errorHandler = (err, req, res, next) => {
+    const { status = 500, message = 'Something went wrong', data } = err;
+    res.status(status).json({ status, message, data });
+  };
+
+  app.use(errorHandler);
+
+  // Запуск сервера
   app.listen(PORT, (error) => {
     if (error) {
       console.log('Server crushed. error: ', error);

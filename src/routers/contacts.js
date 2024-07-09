@@ -8,10 +8,17 @@ import {
 
 const router = express.Router();
 
-// Route for getting all contacts
-router.get('/', getAllContactsController);
+// Обгортка для контролерів
+const ctrlWrapper = (ctrlFn) => async (req, res, next) => {
+  try {
+    await ctrlFn(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
 
-// Route for getting a contact by id
-router.get('/:contactId', getContactByIdController);
+// Маршрути для отримання всіх контактів і контакту за ID
+router.get('/', ctrlWrapper(getAllContactsController));
+router.get('/:contactId', ctrlWrapper(getContactByIdController));
 
 export default router;
