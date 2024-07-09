@@ -4,6 +4,7 @@ import express from 'express';
 import {
   getAllContactsController,
   getContactByIdController,
+  createContactController,
 } from '../controllers/contacts.js';
 
 const router = express.Router();
@@ -17,8 +18,9 @@ const ctrlWrapper = (ctrlFn) => async (req, res, next) => {
   }
 };
 
-// Маршрути для отримання всіх контактів і контакту за ID
+// Маршрути для отримання всіх контактів, контакту за ID і створення нового контакту
 router.get('/', ctrlWrapper(getAllContactsController));
 router.get('/:contactId', ctrlWrapper(getContactByIdController));
+router.post('/', ctrlWrapper(createContactController)); // POST /contacts для створення нового контакту
 
 export default router;
