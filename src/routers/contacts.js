@@ -2,27 +2,19 @@
 
 import express from 'express';
 import {
-  getAllContactsController,
+  getContactsController,
   getContactByIdController,
   createContactController,
   updateContactController,
+  deleteContactController,
 } from '../controllers/contacts.js';
 
 const router = express.Router();
 
-// Обгортка для контролерів
-const ctrlWrapper = (ctrlFn) => async (req, res, next) => {
-  try {
-    await ctrlFn(req, res, next);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Маршрути для отримання всіх контактів, контакту за ID, створення нового контакту і оновлення контакту
-router.get('/', ctrlWrapper(getAllContactsController));
-router.get('/:contactId', ctrlWrapper(getContactByIdController));
-router.post('/', ctrlWrapper(createContactController));
-router.patch('/:contactId', ctrlWrapper(updateContactController)); // PATCH /contacts/:contactId для оновлення контакту
+router.get('/contacts', getContactsController);
+router.get('/contacts/:contactId', getContactByIdController);
+router.post('/contacts', createContactController);
+router.patch('/contacts/:contactId', updateContactController);
+router.delete('/contacts/:contactId', deleteContactController);
 
 export default router;
