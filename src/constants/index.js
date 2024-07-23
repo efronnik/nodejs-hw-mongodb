@@ -5,3 +5,19 @@ export const ENV_VARS = {
   MONGODB_URL: 'MONGODB_URL',
   MONGODB_DB: 'MONGODB_DB',
 };
+
+export const WORK = 'work';
+export const HOME = 'home';
+export const PERSONAL = 'personal';
+
+export const CONTACT_TYPE = [WORK, HOME, PERSONAL];
+
+export const PER_PAGE_LIMIT = 100;
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_PER_PAGE = 10;
+export const DEFAULT_SORT_BY = '_id';
+
+export const SORT_ORDER = {
+  ASC: 'asc',
+  DESC: 'desc',
+};
