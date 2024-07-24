@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { CONTACT_TYPE, PERSONAL } from '../constants/index.js';
+import { CONTACT_TYPE, PERSONAL } from '../../constants/index.js';
 
 const contactsSchema = new Schema(
   {
@@ -23,6 +23,10 @@ const contactsSchema = new Schema(
       required: true,
       enum: CONTACT_TYPE,
       default: PERSONAL,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'users',
     },
   },
   {
