@@ -7,12 +7,12 @@ export const validateMongoId =
     const id = req.params[idName];
 
     if (!id) {
-      throw new Error('id in validateMongoId is not provided');
+      return next(createHttpError(400, `Parameter ${idName} is required`));
     }
 
     if (!isValidObjectId(id)) {
-      return next(createHttpError(400, 'Invalid id'));
+      return next(createHttpError(400, 'Invalid id format'));
     }
 
-    return next();
+    next();
   };

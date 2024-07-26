@@ -10,81 +10,93 @@ import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilters } from '../utils/parseFilters.js';
 
-export const getContactsController = async (req, res) => {
-  const { page, perPage } = parsePaginationParams(req.query);
-  const { sortOrder, sortBy } = parseSortParams(req.query);
-  const filter = parseFilters(req.query);
+export const getContactsController = async (req, res, next) => {
+  try {
+    const { page, perPage } = parsePaginationParams(req.query);
+    const { sortOrder, sortBy } = parseSortParams(req.query);
+    const filter = parseFilters(req.query);
 
-  const contacts = await getAllContacts(
-    page,
-    perPage,
-    sortOrder,
-    sortBy,
-    filter,
-  );
+    const contacts = await getAllContacts(
+      page,
+      perPage,
+      sortOrder,
+      sortBy,
+      filter,
+    );
 
-  const resBody = {
-    status: 200,
-    data: contacts,
-    message: 'Successfully found contacts!',
-  };
-
-  res.status(200).json(resBody);
+    res.status(200).json({
+      status: 200,
+      data: contacts,
+      message: 'Successfully found contacts!',
+    });
+  } catch (error) {
+    next(createHttpError(500, 'Failed to fetch contacts'));
+  }
 };
 
 export const getContactByIdController = async (req, res, next) => {
-  const { contactId } = req.params;
+  try {
+    const { contactId } = req.params;
+    const contact = await getContactById(contactId);
 
-  const contact = await getContactById(contactId);
+    if (!contact) {
+      return next(createHttpError(404, 'Contact not found'));
+    }
 
-  if (!contact) {
-    next(createHttpError(404, 'Contact not found'));
-    return;
+    res.status(200).json({
+      status: 200,
+      data: contact,
+      message: `Successfully found contact with id ${contactId}!`,
+    });
+  } catch (error) {
+    next(createHttpError(500, 'Failed to fetch contact'));
   }
-
-  res.status(200).json({
-    status: 200,
-    data: contact,
-    message: `Successfully found contact with id ${contactId}!`,
-  });
 };
 
-export const createContactController = async (req, res) => {
-  const contact = await createContact(req.body);
+export const createContactController = async (req, res, next) => {
+  try {
+    const contact = await createContact(req.body);
 
-  res.status(201).json({
-    status: 201,
-    message: 'Successfully created a contact!',
-    data: contact,
-  });
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully created a contact!',
+      data: contact,
+    });
+  } catch (error) {
+    next(createHttpError(500, 'Failed to create contact'));
+  }
 };
 
 export const patchContactController = async (req, res, next) => {
-  const { contactId } = req.params;
+  try {
+    const { contactId } = req.params;
+    const result = await updateContact(contactId, req.body);
 
-  const result = await updateContact(contactId, req.body);
+    if (!result) {
+      return next(createHttpError(404, 'Contact not found'));
+    }
 
-  if (!result) {
-    next(createHttpError(404, 'Contact not found'));
-    return;
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully updated the contact!',
+      data: result.contact,
+    });
+  } catch (error) {
+    next(createHttpError(500, 'Failed to update contact'));
   }
-
-  res.status(200).json({
-    status: 200,
-    message: 'Successfully patched a contact!',
-    data: result.contact,
-  });
 };
 
 export const deleteContactController = async (req, res, next) => {
-  const { contactId } = req.params;
+  try {
+    const { contactId } = req.params;
+    const contact = await deleteContact(contactId);
 
-  const contact = await deleteContact(contactId);
+    if (!contact) {
+      return next(createHttpError(404, 'Contact not found'));
+    }
 
-  if (!contact) {
-    next(createHttpError(404, 'Contact not found'));
-    return;
+    res.status(204).send();
+  } catch (error) {
+    next(createHttpError(500, 'Failed to delete contact'));
   }
-
-  res.status(204).send();
 };

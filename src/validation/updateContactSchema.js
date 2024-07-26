@@ -10,7 +10,7 @@ export const updateContactSchema = Joi.object({
   email: Joi.string().email().messages({
     'string.email': 'Email must be a valid email address',
   }),
-  isFavorite: Joi.boolean(),
+  isFavourite: Joi.boolean(),
   contactType: Joi.string()
     .valid(...CONTACT_TYPE)
     .messages({

@@ -30,6 +30,7 @@ router.post(
 
 router.patch(
   '/contacts/:contactId',
+  validateMongoId('contactId'),
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );
