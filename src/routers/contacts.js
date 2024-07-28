@@ -14,7 +14,6 @@ import { createContactSchema } from '../validation/createContactSchema.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { upload } from '../middlewares/multer.js';
 import { deleteFileHandler } from '../middlewares/deleteFileHandler.js';
-import { convertBoolean } from '../middlewares/convertBoolean.js';
 
 const router = Router();
 
@@ -31,7 +30,7 @@ router.get(
 router.post(
   '/',
   upload.single('photo'),
-  convertBoolean,
+
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
   deleteFileHandler,
@@ -40,7 +39,6 @@ router.post(
 router.patch(
   '/:contactId',
   upload.single('photo'),
-  convertBoolean,
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
   deleteFileHandler,
