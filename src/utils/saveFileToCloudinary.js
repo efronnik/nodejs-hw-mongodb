@@ -2,8 +2,6 @@ import cloudinary from 'cloudinary';
 import fs from 'node:fs/promises';
 import { env } from './env.js';
 
-import { CLOUDINARY } from '../constants/index.js';
-
 cloudinary.v2.config({
   secure: true,
   cloud_name: process.env.CLOUD_NAME,
@@ -12,9 +10,14 @@ cloudinary.v2.config({
 });
 
 export const saveFileToCloudinary = async (file) => {
-  const response = await cloudinary.v2.uploader.upload(file.path);
-  await fs.unlink(file.path);
-  return response.secure_url;
+  try {
+    const response = await cloudinary.v2.uploader.upload(file.path);
+    await fs.unlink(file.path);
+    return response.secure_url;
+  } catch (error) {
+    console.error('Error uploading to Cloudinary:', error);
+    throw new Error('Cloudinary upload failed');
+  }
 };
 
 export default cloudinary;
